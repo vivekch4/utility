@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% block title %}Add New Tag{% endblock %}
+{% block page_title %}Add New Tag{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2 tracking-tight">Add New Tag</h1>
+            <p class="text-blue-200/80">Configure a new tag for system monitoring</p>
+        </div>
+        
+        <!-- Back to Tag List Button -->
+        <a href="{% url 'config' %}" 
+           class="group flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-400/40 hover:from-blue-500 hover:to-cyan-400">
+            <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Back to Tags
+        </a>
+    </div>
+
+    <!-- Tag Form -->
+    <div class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+            <!-- Form Header -->
+            <div class="px-6 py-4 border-b border-blue-500/20">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add New Tag
+                </h2>
+                <p class="text-blue-200/70 text-sm mt-1">Configure a new tag for system monitoring</p>
+            </div>
+
+            <!-- Form Content -->
+            <div class="p-6">
+                <form id="tagForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="tag_name" class="block text-sm font-semibold text-blue-100 uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                    </svg>
+                                    Tag Name
+                                </div>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="tag_name" 
+                                name="tag_name" 
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" 
+                                placeholder="e.g., Temperature Sensor"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="tag_value" class="block text-sm font-semibold text-blue-100 uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                    </svg>
+                                    Tag Value
+                                </div>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="tag_value" 
+                                name="tag_value" 
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" 
+                                placeholder="e.g., 25.5°C"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="tag_id" class="block text-sm font-semibold text-blue-100 uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 114 0v2m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.829 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                                    </svg>
+                                    Tag ID
+                                </div>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="tag_id" 
+                                name="tag_id" 
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 font-mono" 
+                                placeholder="e.g., TAG001"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="department" class="block text-sm font-semibold text-blue-100 uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                    Department
+                                </div>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="department" 
+                                name="department" 
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" 
+                                placeholder="e.g., Production"
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end pt-4">
+                        <button 
+                            type="submit" 
+                            class="group flex items-center px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-green-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-400/40 hover:from-green-500 hover:to-emerald-400 focus:outline-none focus:ring-4 focus:ring-green-400/50"
+                        >
+                            <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Add Tag
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modern Success/Error Popup -->
+<div id="tagPopup" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="backdrop-blur-xl bg-slate-900/90 rounded-2xl p-8 text-center border max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-95" id="popupContainer">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-lg" id="popupIcon">
+            <!-- Icon will be inserted here -->
+        </div>
+        <h3 id="popupTitle" class="text-xl font-semibold mb-2"></h3>
+        <p id="popupMessage" class="mb-6 opacity-80"></p>
+        <button 
+            onclick="closePopup()" 
+            class="px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105 font-medium" 
+            id="popupButton"
+        >
+            Close
+        </button>
+    </div>
+</div>
+
+<script>
+    // Use window.authToken instead of localStorage for token storage
+    const token = window.authToken || localStorage.getItem('token');
+
+    // Handle form submission
+    document.getElementById('tagForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const tag_name = document.getElementById('tag_name').value;
+        const tag_value = document.getElementById('tag_value').value;
+        const tag_id = document.getElementById('tag_id').value;
+        const department = document.getElementById('department').value;
+
+        // Validate input
+        if (!tag_name || !tag_value || !tag_id || !department) {
+            showPopup('Validation Error', 'Please provide all required fields.', false);
+            return;
+        }
+
+        // Show loading state
+        const submitButton = document.querySelector('button[type="submit"]');
+        const originalContent = submitButton.innerHTML;
+        submitButton.innerHTML = `
+            <svg class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            Adding Tag...
+        `;
+        submitButton.disabled = true;
+
+        try {
+            const response = await fetch('/tags/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tag_name, tag_value, tag_id, department })
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                showPopup('Success!', data.message || 'Tag has been added successfully to the system.', true);
+                document.getElementById('tagForm').reset();
+            } else {
+                showPopup('Operation Failed', data.error || 'Failed to add tag to the system.', false);
+            }
+        } catch (error) {
+            console.error('Error adding tag:', error);
+            showPopup('Network Error', 'Unable to connect to the server. Please try again.', false);
+        } finally {
+            submitButton.innerHTML = originalContent;
+            submitButton.disabled = false;
+        }
+    });
+
+    // Show popup with dynamic styling
+    function showPopup(title, message, isSuccess) {
+        const popup = document.getElementById('tagPopup');
+        const container = document.getElementById('popupContainer');
+        const titleElement = document.getElementById('popupTitle');
+        const messageElement = document.getElementById('popupMessage');
+        const iconElement = document.getElementById('popupIcon');
+        const buttonElement = document.getElementById('popupButton');
+
+        titleElement.textContent = title;
+        messageElement.textContent = message;
+
+        if (isSuccess) {
+            container.className = 'backdrop-blur-xl bg-slate-900/90 rounded-2xl p-8 text-center border border-green-500/30 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-100';
+            titleElement.className = 'text-xl font-semibold mb-2 text-green-300';
+            messageElement.className = 'mb-6 opacity-80 text-green-200/80';
+            iconElement.className = 'w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25';
+            iconElement.innerHTML = `
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            `;
+            buttonElement.className = 'px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition-all duration-300 hover:scale-105 font-medium';
+        } else {
+            container.className = 'backdrop-blur-xl bg-slate-900/90 rounded-2xl p-8 text-center border border-red-500/30 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-100';
+            titleElement.className = 'text-xl font-semibold mb-2 text-red-300';
+            messageElement.className = 'mb-6 opacity-80 text-red-200/80';
+            iconElement.className = 'w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-red-600 to-red-500 flex items-center justify-center shadow-lg shadow-red-500/25';
+            iconElement.innerHTML = `
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            `;
+            buttonElement.className = 'px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition-all duration-300 hover:scale-105 font-medium';
+        }
+
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            container.classList.add('scale-100');
+        }, 50);
+    }
+
+    // Close popup
+    function closePopup() {
+        const popup = document.getElementById('tagPopup');
+        const container = document.getElementById('popupContainer');
+        
+        container.classList.remove('scale-100');
+        container.classList.add('scale-95');
+        
+        setTimeout(() => {
+            popup.classList.add('hidden');
+        }, 200);
+    }
+
+    // Close popup when clicking outside
+    document.getElementById('tagPopup').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePopup();
+        }
+    });
+
+    // Add interactive animations to input fields
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('transform', 'scale-[1.02]');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('transform', 'scale-[1.02]');
+        });
+    });
+</script>
+{% endblock %}

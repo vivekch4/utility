@@ -1,0 +1,266 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Utility Project{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 h-screen overflow-hidden">
+    <div class="h-screen flex relative">
+        <!-- Animated background -->
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 z-0">
+            <div class="absolute inset-0 opacity-25">
+                <div class="absolute top-10 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+                <div class="absolute top-20 right-10 w-72 h-72 bg-cyan-400 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
+                <div class="absolute -bottom-8 left-20 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-4000"></div>
+                <div class="absolute bottom-20 right-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-6000"></div>
+            </div>
+            <!-- Tech grid pattern -->
+            <div class="absolute inset-0 opacity-5">
+                <div class="h-full w-full" style="background-image: linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px); background-size: 50px 50px;"></div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="w-64 relative z-10 h-full flex-shrink-0">
+            <div class="h-full backdrop-blur-xl bg-slate-900/60 border-r border-blue-500/20 p-6 shadow-2xl">
+                <!-- Glassmorphism effect for sidebar -->
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-slate-900/20 backdrop-blur-xl"></div>
+                
+                <div class="relative z-10">
+                    <!-- Logo/Brand -->
+                    <div class="flex items-center mb-8">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/25 mr-3">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-white tracking-tight">Utility Dashboard</h2>
+                    </div>
+
+                    <!-- Navigation -->
+                    <nav>
+                        <ul class="space-y-2">
+                            <li class="nav-item">
+                                <a href="/home/" class="group flex items-center p-3 rounded-xl text-blue-100 hover:text-white hover:bg-blue-600/20 hover:border-blue-400/30 transition-all duration-300 border border-transparent hover:shadow-lg hover:shadow-blue-500/10 hover:scale-105">
+                                    <i class="fas fa-home mr-3 w-5 text-center group-hover:text-cyan-300 transition-colors"></i>
+                                    <span class="font-medium">Dashboard</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/user-page/" class="group flex items-center p-3 rounded-xl text-blue-100 hover:text-white hover:bg-blue-600/20 hover:border-blue-400/30 transition-all duration-300 border border-transparent hover:shadow-lg hover:shadow-blue-500/10 hover:scale-105">
+                                    <i class="fas fa-user mr-3 w-5 text-center group-hover:text-cyan-300 transition-colors"></i>
+                                    <span class="font-medium">User</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/connection/" class="group flex items-center p-3 rounded-xl text-blue-100 hover:text-white hover:bg-blue-600/20 hover:border-blue-400/30 transition-all duration-300 border border-transparent hover:shadow-lg hover:shadow-blue-500/10 hover:scale-105">
+                                    <i class="fas fa-link mr-3 w-5 text-center group-hover:text-cyan-300 transition-colors"></i>
+                                    <span class="font-medium">Connection</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/config/" class="group flex items-center p-3 rounded-xl text-blue-100 hover:text-white hover:bg-blue-600/20 hover:border-blue-400/30 transition-all duration-300 border border-transparent hover:shadow-lg hover:shadow-blue-500/10 hover:scale-105">
+                                    <i class="fas fa-cog mr-3 w-5 text-center group-hover:text-cyan-300 transition-colors"></i>
+                                    <span class="font-medium">Config</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/control/" class="group flex items-center p-3 rounded-xl text-blue-100 hover:text-white hover:bg-blue-600/20 hover:border-blue-400/30 transition-all duration-300 border border-transparent hover:shadow-lg hover:shadow-blue-500/10 hover:scale-105">
+                                    <i class="fas fa-gamepad mr-3 w-5 text-center group-hover:text-cyan-300 transition-colors"></i>
+                                    <span class="font-medium">Control</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/scheduled/" class="group flex items-center p-3 rounded-xl text-blue-100 hover:text-white hover:bg-blue-600/20 hover:border-blue-400/30 transition-all duration-300 border border-transparent hover:shadow-lg hover:shadow-blue-500/10 hover:scale-105">
+                                    <i class="fas fa-calendar mr-3 w-5 text-center group-hover:text-cyan-300 transition-colors"></i>
+                                    <span class="font-medium">Scheduled</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/report/" class="group flex items-center p-3 rounded-xl text-blue-100 hover:text-white hover:bg-blue-600/20 hover:border-blue-400/30 transition-all duration-300 border border-transparent hover:shadow-lg hover:shadow-blue-500/10 hover:scale-105">
+                                    <i class="fas fa-file-alt mr-3 w-5 text-center group-hover:text-cyan-300 transition-colors"></i>
+                                    <span class="font-medium">Report</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-grow flex flex-col relative z-10 h-full">
+            <!-- Top Navigation Bar -->
+            <nav class="backdrop-blur-xl bg-slate-900/40 border-b border-blue-500/20 shadow-xl px-6 py-4 flex-shrink-0">
+                <!-- Glassmorphism effect for top nav -->
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-900/10 to-slate-900/20 backdrop-blur-xl"></div>
+                
+                <div class="relative z-10 flex justify-between items-center">
+                    <div class="flex items-center">
+                        <h1 class="text-2xl font-bold text-white tracking-tight">
+                            {% block page_title %}Dashboard{% endblock %}
+                        </h1>
+                    </div>
+                    
+                    <!-- User Info and Logout -->
+                    <div class="flex items-center space-x-6">
+                        <!-- User info card -->
+                        <div class="flex items-center space-x-3 bg-slate-800/50 backdrop-blur-sm rounded-xl px-4 py-2 border border-blue-500/20">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                            <div class="text-sm">
+                                <div class="font-medium text-white">{{ user.username|default:"Admin" }}</div>
+                                <div class="text-blue-300 text-xs">{{ user.role|default:"Administrator" }}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Logout button -->
+                        <a href="/logout/" class="group flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-500/30 hover:from-red-500 hover:to-red-400 focus:outline-none focus:ring-2 focus:ring-red-400/50">
+                            <i class="fas fa-sign-out-alt mr-2 group-hover:animate-pulse"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Page Content - This is the scrollable area -->
+            <main class="flex-grow p-6 relative z-10 overflow-y-auto">
+                <div class="max-w-7xl mx-auto">
+                    <!-- Content container with glassmorphism -->
+                    <div class="backdrop-blur-xl bg-slate-900/20 rounded-3xl border border-blue-500/20 shadow-2xl p-6 relative">
+                        <!-- Glassmorphism effect for content -->
+                        <div class="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+                        
+                        <div class="relative z-10">
+                            {% block content %}
+                            <!-- Default content if no content block is provided -->
+                            <div class="text-center py-20">
+                                <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/25">
+                                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                    </svg>
+                                </div>
+                                <h2 class="text-3xl font-bold text-white mb-4">Welcome to Utility Dashboard</h2>
+                                <p class="text-blue-200 max-w-md mx-auto">Select an option from the sidebar to get started with your utility management system.</p>
+                            </div>
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Custom Styles -->
+    <style>
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        
+        .animation-delay-6000 {
+            animation-delay: 6s;
+        }
+        
+        /* Smooth scrollbar for main content */
+        main::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        main::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 4px;
+        }
+        
+        main::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+        }
+        
+        main::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.7);
+        }
+        
+        /* Enhanced hover effects */
+        .nav-item a:hover {
+            transform: translateX(4px);
+        }
+        
+        /* Subtle animations for better UX */
+        .nav-item a {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-item a:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .nav-item a:hover:before {
+            left: 100%;
+        }
+        
+        /* Focus states for accessibility */
+        .nav-item a:focus {
+            outline: 2px solid rgba(59, 130, 246, 0.5);
+            outline-offset: 2px;
+        }
+    </style>
+
+    <!-- JavaScript for enhanced interactivity -->
+    <script>
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight active navigation item
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-item a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath || 
+                    (currentPath === '/' && link.getAttribute('href') === '/')) {
+                    link.classList.add('bg-blue-600/30', 'border-blue-400/40', 'text-white', 'shadow-lg', 'shadow-blue-500/20');
+                    link.querySelector('i').classList.add('text-cyan-300');
+                }
+            });
+            
+            // Add hover effects to navigation items
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(4px) scale(1.02)';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    if (!this.classList.contains('bg-blue-600/30')) {
+                        this.style.transform = 'translateX(0) scale(1)';
+                    }
+                });
+            });
+            
+            // Add smooth scrolling behavior
+            document.documentElement.style.scrollBehavior = 'smooth';
+        });
+    </script>
+</body>
+</html>

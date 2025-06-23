@@ -1,0 +1,624 @@
+{% extends 'base.html' %}
+{% block title %}Control Panel{% endblock %}
+{% block page_title %}Control Panel{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2 tracking-tight">Control Panel</h1>
+            <p class="text-blue-200/80">Monitor and control your system tags</p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-3">
+            <!-- Search Bar -->
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="searchInput"
+                    placeholder="Search tags..." 
+                    class="w-64 px-4 py-3 pl-12 bg-slate-800/50 border border-blue-500/20 rounded-xl text-white placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 backdrop-blur-xl transition-all duration-300"
+                    oninput="searchTags(this.value)"
+                >
+                <svg class="absolute left-4 top-3.5 w-5 h-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            
+            <!-- View Toggle -->
+            <div class="flex bg-slate-800/50 rounded-xl p-1 border border-blue-500/20">
+                <button 
+                    id="cardViewBtn"
+                    onclick="switchView('card')" 
+                    class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z"></path>
+                    </svg>
+                    Cards
+                </button>
+                <button 
+                    id="tableViewBtn"
+                    onclick="switchView('table')" 
+                    class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 text-blue-200 hover:bg-blue-500/20">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0V4a1 1 0 011-1h3M3 10V4a1 1 0 011-1h3m0 0V2m0 6v2m14-8h-3a1 1 0 00-1 1v4M12 6V2m0 16v-8"></path>
+                    </svg>
+                    Table
+                </button>
+            </div>
+            
+            <!-- Refresh Button -->
+            <button 
+                onclick="loadTags()" 
+                class="group flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-400/40 hover:from-blue-500 hover:to-cyan-400">
+                <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="hidden backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl p-8 text-center">
+        <div class="flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-cyan-300 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+        </div>
+        <p class="text-blue-200/80">Loading tags...</p>
+    </div>
+
+    <!-- Cards Container -->
+    <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Cards will be loaded here -->
+    </div>
+
+    <!-- Table Container -->
+    <div id="table-container" class="hidden backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gradient-to-r from-slate-700/50 to-slate-600/50 border-b border-blue-500/20">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">Tag Name</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">Department</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">Address</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">Control</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body" class="divide-y divide-blue-500/10">
+                    <!-- Table rows will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl p-12 text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/25">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">No Tags Available</h3>
+        <p class="text-blue-200/70 mb-6">No tags found in the system. Add some tags to get started.</p>
+        <a href="{% url 'add_tag' %}" 
+           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-green-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-400/40">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add New Tag
+        </a>
+    </div>
+
+    <!-- No Search Results -->
+    <div id="no-results-state" class="hidden backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl p-12 text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-amber-600 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/25">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">No Results Found</h3>
+        <p class="text-blue-200/70 mb-6">No tags match your search criteria. Try adjusting your search terms.</p>
+        <button 
+            onclick="clearSearch()" 
+            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-400/40">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            Clear Search
+        </button>
+    </div>
+</div>
+
+<!-- Modern Status Change Popup -->
+<div id="statusPopup" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="backdrop-blur-xl bg-slate-900/90 rounded-2xl p-8 text-center border max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-95" id="statusPopupContainer">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-lg" id="statusPopupIcon">
+            <!-- Icon will be inserted here -->
+        </div>
+        <h3 id="statusPopupTitle" class="text-xl font-semibold mb-2"></h3>
+        <p id="statusPopupMessage" class="mb-6 opacity-80"></p>
+        <button 
+            onclick="closeStatusPopup()" 
+            class="px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105 font-medium" 
+            id="statusPopupButton"
+        >
+            Close
+        </button>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const token = window.authToken || localStorage.getItem('token');
+    let allTags = [];
+    let currentView = 'card';
+    let currentSearchTerm = '';
+
+    async function loadTags() {
+        const cardsContainer = $('#cards-container');
+        const tableContainer = $('#table-container');
+        const loadingState = $('#loading-state');
+        const emptyState = $('#empty-state');
+        const noResultsState = $('#no-results-state');
+        
+        // Show loading state
+        cardsContainer.empty();
+        $('#table-body').empty();
+        emptyState.addClass('hidden');
+        noResultsState.addClass('hidden');
+        tableContainer.addClass('hidden');
+        loadingState.removeClass('hidden');
+        
+        try {
+            const response = await fetch('/controls/', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            });
+            allTags = await response.json();
+            
+            // Hide loading state
+            loadingState.addClass('hidden');
+            
+            if (allTags.length === 0) {
+                emptyState.removeClass('hidden');
+                return;
+            }
+            
+            // Apply current search if any
+            displayTags(currentSearchTerm ? filterTags(allTags, currentSearchTerm) : allTags);
+            
+        } catch (error) {
+            console.error('Error loading tags:', error);
+            loadingState.addClass('hidden');
+            showStatusPopup('Error', 'Failed to load tags. Please try again.', false);
+        }
+    }
+
+    function filterTags(tags, searchTerm) {
+        if (!searchTerm.trim()) return tags;
+        
+        const term = searchTerm.toLowerCase();
+        return tags.filter(tag => 
+            tag.tag_name.toLowerCase().includes(term) ||
+            tag.tag_id.toString().includes(term) ||
+            tag.department.toLowerCase().includes(term) 
+          
+        );
+    }
+
+    function displayTags(tags) {
+        const cardsContainer = $('#cards-container');
+        const tableBody = $('#table-body');
+        const tableContainer = $('#table-container');
+        const emptyState = $('#empty-state');
+        const noResultsState = $('#no-results-state');
+
+        // Clear containers
+        cardsContainer.empty();
+        tableBody.empty();
+
+        if (tags.length === 0) {
+            if (currentSearchTerm) {
+                noResultsState.removeClass('hidden');
+            } else {
+                emptyState.removeClass('hidden');
+            }
+            tableContainer.addClass('hidden');
+            return;
+        }
+
+        // Hide empty states
+        emptyState.addClass('hidden');
+        noResultsState.addClass('hidden');
+
+        if (currentView === 'card') {
+            tableContainer.addClass('hidden');
+            tags.forEach(tag => {
+                const tagCard = createTagCard(tag);
+                cardsContainer.append(tagCard);
+            });
+            
+            // Add animation to cards
+            setTimeout(() => {
+                $('.tag-card').each(function(index) {
+                    $(this).delay(index * 50).queue(function() {
+                        $(this).addClass('animate-fade-in').dequeue();
+                    });
+                });
+            }, 50);
+        } else {
+            tableContainer.removeClass('hidden');
+            tags.forEach(tag => {
+                const tableRow = createTableRow(tag);
+                tableBody.append(tableRow);
+            });
+        }
+    }
+
+    function searchTags(searchTerm) {
+        currentSearchTerm = searchTerm;
+        const filteredTags = filterTags(allTags, searchTerm);
+        displayTags(filteredTags);
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        currentSearchTerm = '';
+        displayTags(allTags);
+    }
+
+    function switchView(viewType) {
+        currentView = viewType;
+        const cardBtn = $('#cardViewBtn');
+        const tableBtn = $('#tableViewBtn');
+
+        if (viewType === 'card') {
+            cardBtn.removeClass('text-blue-200 hover:bg-blue-500/20').addClass('bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg');
+            tableBtn.removeClass('bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg').addClass('text-blue-200 hover:bg-blue-500/20');
+        } else {
+            tableBtn.removeClass('text-blue-200 hover:bg-blue-500/20').addClass('bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg');
+            cardBtn.removeClass('bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg').addClass('text-blue-200 hover:bg-blue-500/20');
+        }
+
+        // Re-display tags in new view
+        const filteredTags = currentSearchTerm ? filterTags(allTags, currentSearchTerm) : allTags;
+        displayTags(filteredTags);
+    }
+
+    function createTagCard(tag) {
+        const statusColor = tag.status ? 'from-green-600 to-emerald-500' : 'from-slate-600 to-slate-500';
+        const statusText = tag.status ? 'Active' : 'Inactive';
+        const statusIcon = tag.status ? 
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>' :
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+
+        return `
+            <div class="tag-card backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-400/20 opacity-0">
+                <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+                
+                <div class="relative z-10">
+                    <!-- Card Header -->
+                    <div class="px-6 py-4 border-b border-blue-500/20">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-white flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                </svg>
+                                ${tag.tag_name}
+                            </h3>
+                            <div class="flex items-center px-3 py-1 bg-gradient-to-r ${statusColor} rounded-full text-white text-xs font-semibold shadow-lg">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    ${statusIcon}
+                                </svg>
+                                ${statusText}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Content -->
+                    <div class="p-6 space-y-4">
+                        <div class="grid grid-cols-1 gap-3">
+                            <div class="flex items-center text-sm">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 114 0v2m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.829 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                                </svg>
+                                <span class="text-blue-200/70">ID:</span>
+                                <span class="text-white ml-2 font-mono">${tag.tag_id}</span>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                                <span class="text-blue-200/70">Department:</span>
+                                <span class="text-white ml-2">${tag.department}</span>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span class="text-blue-200/70">Address:</span>
+                                <span class="text-white ml-2">${tag.tag_value}</span>
+                            </div>
+                        </div>
+
+                        <!-- Toggle Switch -->
+                        <div class="flex items-center justify-between pt-4 border-t border-blue-500/20">
+                            <span class="text-sm font-medium text-blue-200">Control Status</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" ${tag.status ? 'checked' : ''} 
+                                       onchange="toggleTag(${tag.id}, this.checked, this)"
+                                       class="sr-only peer">
+                                <div class="w-14 h-7 bg-slate-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-400/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all duration-300 peer-checked:bg-gradient-to-r peer-checked:from-green-500 peer-checked:to-emerald-400 shadow-lg"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function createTableRow(tag) {
+        const statusColor = tag.status ? 'from-green-600 to-emerald-500' : 'from-slate-600 to-slate-500';
+        const statusText = tag.status ? 'Active' : 'Inactive';
+        const statusIcon = tag.status ? 
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>' :
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+
+        return `
+            <tr class="hover:bg-slate-700/30 transition-colors duration-200" data-tag-id="${tag.id}">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                        <span class="text-white font-medium">${tag.tag_name}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="text-blue-200 font-mono text-sm">${tag.tag_id}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="text-blue-200">${tag.department}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="text-blue-200 text-sm">${tag.tag_value}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center px-3 py-1 bg-gradient-to-r ${statusColor} rounded-full text-white text-xs font-semibold shadow-lg w-fit">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${statusIcon}
+                        </svg>
+                        ${statusText}
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" ${tag.status ? 'checked' : ''} 
+                               onchange="toggleTag(${tag.id}, this.checked, this)"
+                               class="sr-only peer">
+                        <div class="w-12 h-6 bg-slate-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-400/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 peer-checked:bg-gradient-to-r peer-checked:from-green-500 peer-checked:to-emerald-400 shadow-lg"></div>
+                    </label>
+                </td>
+            </tr>
+        `;
+    }
+
+    async function toggleTag(tagId, status, element) {
+        // Add loading state to the toggle
+        element.disabled = true;
+        const parentElement = $(element).closest(currentView === 'card' ? '.tag-card' : 'tr');
+        parentElement.addClass('opacity-75');
+
+        try {
+            const response = await fetch('/controls/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    tag_id: tagId,
+                    status: status
+                })
+            });
+            const data = await response.json();
+            
+            if (response.ok) {
+                showStatusPopup('Success!', 'Tag status updated successfully.', true);
+                // Update the tag in our local array
+                const tagIndex = allTags.findIndex(tag => tag.id === tagId);
+                if (tagIndex !== -1) {
+                    allTags[tagIndex].status = status;
+                }
+                // Update the status indicator
+                if (currentView === 'card') {
+                    updateCardStatus(parentElement, status);
+                } else {
+                    updateTableRowStatus(parentElement, status);
+                }
+            } else {
+                // Revert the toggle if the request failed
+                element.checked = !status;
+                showStatusPopup('Operation Failed', data.error || 'Failed to toggle tag status.', false);
+            }
+        } catch (error) {
+            console.error('Error toggling tag:', error);
+            // Revert the toggle if there was an error
+            element.checked = !status;
+            showStatusPopup('Network Error', 'Unable to connect to the server. Please try again.', false);
+        } finally {
+            element.disabled = false;
+            parentElement.removeClass('opacity-75');
+        }
+    }
+
+    function updateCardStatus(card, status) {
+        const statusElement = card.find('.bg-gradient-to-r').first();
+        const statusText = status ? 'Active' : 'Inactive';
+        const statusColor = status ? 'from-green-600 to-emerald-500' : 'from-slate-600 to-slate-500';
+        const statusIcon = status ? 
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>' :
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+
+        statusElement.removeClass().addClass(`flex items-center px-3 py-1 bg-gradient-to-r ${statusColor} rounded-full text-white text-xs font-semibold shadow-lg`);
+        statusElement.html(`
+            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ${statusIcon}
+            </svg>
+            ${statusText}
+        `);
+    }
+
+    function updateTableRowStatus(row, status) {
+        const statusElement = row.find('td:nth-child(5) .bg-gradient-to-r');
+        const statusText = status ? 'Active' : 'Inactive';
+        const statusColor = status ? 'from-green-600 to-emerald-500' : 'from-slate-600 to-slate-500';
+        const statusIcon = status ? 
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>' :
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+
+        statusElement.removeClass().addClass(`flex items-center px-3 py-1 bg-gradient-to-r ${statusColor} rounded-full text-white text-xs font-semibold shadow-lg w-fit`);
+        statusElement.html(`
+            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ${statusIcon}
+            </svg>
+            ${statusText}
+        `);
+    }
+
+    // Show status popup with dynamic styling
+    function showStatusPopup(title, message, isSuccess) {
+        const popup = document.getElementById('statusPopup');
+        const container = document.getElementById('statusPopupContainer');
+        const titleElement = document.getElementById('statusPopupTitle');
+        const messageElement = document.getElementById('statusPopupMessage');
+        const iconElement = document.getElementById('statusPopupIcon');
+        const buttonElement = document.getElementById('statusPopupButton');
+
+        titleElement.textContent = title;
+        messageElement.textContent = message;
+
+        if (isSuccess) {
+            container.className = 'backdrop-blur-xl bg-slate-900/90 rounded-2xl p-8 text-center border border-green-500/30 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-100';
+            titleElement.className = 'text-xl font-semibold mb-2 text-green-300';
+            messageElement.className = 'mb-6 opacity-80 text-green-200/80';
+            iconElement.className = 'w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25';
+            iconElement.innerHTML = `
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            `;
+            buttonElement.className = 'px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition-all duration-300 hover:scale-105 font-medium';
+        } else {
+            container.className = 'backdrop-blur-xl bg-slate-900/90 rounded-2xl p-8 text-center border border-red-500/30 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-100';
+            titleElement.className = 'text-xl font-semibold mb-2 text-red-300';
+            messageElement.className = 'mb-6 opacity-80 text-red-200/80';
+            iconElement.className = 'w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-red-600 to-red-500 flex items-center justify-center shadow-lg shadow-red-500/25';
+            iconElement.innerHTML = `
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            `;
+            buttonElement.className = 'px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition-all duration-300 hover:scale-105 font-medium';
+        }
+
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            container.classList.add('scale-100');
+        }, 50);
+    }
+
+    // Close status popup
+    function closeStatusPopup() {
+        const popup = document.getElementById('statusPopup');
+        const container = document.getElementById('statusPopupContainer');
+        
+        container.classList.remove('scale-100');
+        container.classList.add('scale-95');
+        
+        setTimeout(() => {
+            popup.classList.add('hidden');
+        }, 200);
+    }
+
+    // Close popup when clicking outside
+    document.getElementById('statusPopup').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeStatusPopup();
+        }
+    });
+
+    // Initialize page
+    $(document).ready(function() {
+        loadTags();
+    });
+
+    // Add custom CSS for animations
+    const style = document.createElement('style');
+    style.textContent = `
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom scrollbar for table */
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-track {
+            background: rgba(51, 65, 85, 0.3);
+            border-radius: 4px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, #3B82F6, #06B6D4);
+            border-radius: 4px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(90deg, #2563EB, #0891B2);
+        }
+
+        /* Search input focus animation */
+        #searchInput:focus {
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Toggle button transitions */
+        .view-toggle button {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Table row hover effects */
+        tbody tr:hover {
+            background: rgba(51, 65, 85, 0.3);
+            transform: translateX(2px);
+            transition: all 0.2s ease;
+        }
+
+        /* Enhanced card hover effects */
+        .tag-card:hover {
+            box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.25);
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}
