@@ -122,10 +122,10 @@
                         </div>
                         
                         <!-- Logout button -->
-                        <a href="/logout/" class="group flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-500/30 hover:from-red-500 hover:to-red-400 focus:outline-none focus:ring-2 focus:ring-red-400/50">
+                        <button onclick="handleLogout()" class="group flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-500/30 hover:from-red-500 hover:to-red-400 focus:outline-none focus:ring-2 focus:ring-red-400/50">
                             <i class="fas fa-sign-out-alt mr-2 group-hover:animate-pulse"></i>
                             Logout
-                        </a>
+                        </button>
                     </div>
                 </div>
             </nav>
@@ -261,6 +261,42 @@
             // Add smooth scrolling behavior
             document.documentElement.style.scrollBehavior = 'smooth';
         });
+
+        async function handleLogout() {
+            const token = window.authToken || localStorage.getItem('token');
+            const refreshToken = localStorage.getItem('refresh_token'); // Assuming refresh_token is stored
+            console.log(token,refreshToken,"fhfhsf")
+            if (!token || !refreshToken) {
+                alert('No authentication token found. Please log in again.');
+                window.location.href = '/';
+                return;
+            }
+        
+            try {
+                const response = await fetch('/logout/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ refresh_token: refreshToken })
+                });
+        
+                if (response.ok) {
+                    // Clear tokens from localStorage
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('refresh_token');
+                    window.location.href = '/';
+                } else {
+                    const errorData = await response.json();
+                    console.error('Logout failed:', errorData);
+                    alert('Failed to log out. Please try again.');
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('An error occurred during logout.');
+            }
+        }
     </script>
 </body>
 </html>

@@ -49,6 +49,25 @@ class LoginView(APIView):
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get('refresh_token')
+            if not refresh_token:
+                return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # Blacklist the refresh token
+            logger.info(f"User {request.user.user_id} logged out successfully")
+            return Response({'message': 'Successfully logged out'}, status=status.HTTP_205_RESET_CONTENT)
+        
+        except Exception as e:
+            logger.error(f"Logout error for user {request.user.user_id}: {str(e)}")
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 # User List/Create View
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()
